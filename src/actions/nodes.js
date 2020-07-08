@@ -36,6 +36,8 @@ export function checkNodeStatus(node) {
       const json = await res.json();
 
       dispatch(checkNodeStatusSuccess(node, json));
+
+      dispatch(pullBlockData(node));
     } catch (err) {
       dispatch(checkNodeStatusFailure(node));
     }
@@ -49,3 +51,47 @@ export function checkNodeStatuses(list) {
     });
   };
 }
+
+export function pullBlockData(node) {
+  return async dispatch => {
+    try {
+      dispatch(pullBlockDataStart(node))
+
+      const res = await fetch(`${node.url}/api/v1/blocks`);
+
+      if(res.status >= 400) {
+        dispatch(pullBlockDataFailure(node));
+      }
+
+      const json = await res.json();
+
+      dispatch(pullBlockDataSuccess(node, json.data))
+
+
+    } catch (err) {
+      dispatch(pullBlockDataFailure(node));
+    }
+  }
+}
+
+const pullBlockDataStart = (node) => {
+  return {
+    type: types.PULL_BLOCK_DATA_START,
+    node
+  };
+};
+
+const pullBlockDataSuccess = (node, json) => {
+  return {
+    type: types.PULL_BLOCK_DATA_SUCCESS,
+    node,
+    json,
+  };
+};
+
+const pullBlockDataFailure = (node) => {
+  return {
+    type: types.PULL_BLOCK_DATA_FAILURE,
+    node
+  };
+};

@@ -8,9 +8,13 @@ import {
   ExpansionPanelDetails,
   makeStyles,
   Box,
+  Grid,
 } from "@material-ui/core";
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import colors from "../constants/colors";
 import Status from "./Status";
+import Block from "./Block";
 
 const Node = ({ node, expanded, toggleNodeExpanded }) => {
   const classes = useStyles();
@@ -46,7 +50,11 @@ const Node = ({ node, expanded, toggleNodeExpanded }) => {
         </Box>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Typography>Blocks go here</Typography>
+        <Grid container>
+          {node.fetchingBlock && <CircularProgress />}
+          {node.blocks ? node.blocks.map(block => (<Block key={block.id} block={block} />)) 
+                                                      : ( <Typography>Failed to retrieve data</Typography> )}
+        </Grid>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
